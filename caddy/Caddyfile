@@ -1,0 +1,265 @@
+{
+    auto_https off
+}
+
+(alfacore_routes) {
+    handle_path /git/* {
+        reverse_proxy forgejo:3000
+    }
+    handle_path /git/* {
+        reverse_proxy forgejo:3000
+    }
+    @longpoll path /longpolling/* /websocket
+    handle @longpoll {
+        reverse_proxy odoo:8072
+    }
+    handle {
+        reverse_proxy odoo:8069 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+        }
+    }
+    encode gzip
+    request_body {
+        max_size 100MB
+    }
+}
+
+(southbrook_routes) {
+    handle_path /git/* {
+        reverse_proxy forgejo:3000
+    }
+    @longpoll path /longpolling/* /websocket
+    handle @longpoll {
+        reverse_proxy southbrook-odoo:8072
+    }
+    handle {
+        reverse_proxy southbrook-odoo:8069 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+        }
+    }
+    encode gzip
+    request_body {
+        max_size 100MB
+    }
+}
+
+(sapienzium_routes) {
+    handle_path /git/* {
+        reverse_proxy forgejo:3000
+    }
+    @longpoll path /longpolling/* /websocket
+    handle @longpoll {
+        reverse_proxy sapienzium-odoo:8072
+    }
+    handle {
+        reverse_proxy sapienzium-odoo:8069 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+        }
+    }
+    encode gzip
+    request_body {
+        max_size 100MB
+    }
+}
+
+(porterly_routes) {
+    handle_path /git/* {
+        reverse_proxy forgejo:3000
+    }
+    @longpoll path /longpolling/* /websocket
+    handle @longpoll {
+        reverse_proxy porterly-odoo:8072
+    }
+    handle {
+        reverse_proxy porterly-odoo:8069 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+        }
+    }
+    encode gzip
+    request_body {
+        max_size 100MB
+    }
+}
+
+(tribancs_routes) {
+    handle_path /git/* {
+        reverse_proxy forgejo:3000
+    }
+    @longpoll path /longpolling/* /websocket
+    handle @longpoll {
+        reverse_proxy tribancs-odoo:8072
+    }
+    handle {
+        reverse_proxy tribancs-odoo:8069 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+        }
+    }
+    encode gzip
+    request_body {
+        max_size 100MB
+    }
+}
+
+(odooiq_routes) {
+    handle_path /git/* {
+        reverse_proxy forgejo:3000
+    }
+    @longpoll path /longpolling/* /websocket
+    handle @longpoll {
+        reverse_proxy odooiq-odoo:8072
+    }
+    handle {
+        reverse_proxy odooiq-odoo:8069 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+        }
+    }
+    encode gzip
+    request_body {
+        max_size 100MB
+    }
+}
+
+(quattroporte_routes) {
+    handle_path /git/* {
+        reverse_proxy forgejo:3000
+    }
+    @longpoll path /longpolling/* /websocket
+    handle @longpoll {
+        reverse_proxy quattroporte-odoo:8072
+    }
+    handle {
+        reverse_proxy quattroporte-odoo:8069 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+        }
+    }
+    encode gzip
+    request_body {
+        max_size 100MB
+    }
+}
+
+(odooai_routes) {
+    handle_path /git/* {
+        reverse_proxy forgejo:3000
+    }
+    @longpoll path /longpolling/* /websocket
+    handle @longpoll {
+        reverse_proxy odooai-odoo:8072
+    }
+    handle {
+        reverse_proxy odooai-odoo:8069 {
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+        }
+    }
+    encode gzip
+    request_body {
+        max_size 100MB
+    }
+}
+
+www.southbrookcabinetry.local:80, southbrookcabinetry.local:80 {
+    import southbrook_routes
+}
+www.southbrookcabinetry.local:443, southbrookcabinetry.local:443 {
+    tls /data/caddy/certs/southbrook.crt /data/caddy/certs/southbrook.key
+    import southbrook_routes
+}
+
+www.sapienzium.local:80, sapienzium.local:80 {
+    import sapienzium_routes
+}
+www.sapienzium.local:443, sapienzium.local:443 {
+    tls /data/caddy/certs/sapienzium.crt /data/caddy/certs/sapienzium.key
+    import sapienzium_routes
+}
+
+www.porterly.local:80, porterly.local:80 {
+    import porterly_routes
+}
+www.porterly.local:443, porterly.local:443 {
+    tls /data/caddy/certs/porterly.crt /data/caddy/certs/porterly.key
+    import porterly_routes
+}
+
+www.tribancs.local:80, tribancs.local:80 {
+    import tribancs_routes
+}
+www.tribancs.local:443, tribancs.local:443 {
+    tls /data/caddy/certs/tribancs.crt /data/caddy/certs/tribancs.key
+    import tribancs_routes
+}
+
+www.odooiq.local:80, odooiq.local:80 {
+    import odooiq_routes
+}
+www.odooiq.local:443, odooiq.local:443 {
+    tls /data/caddy/certs/odooiq.crt /data/caddy/certs/odooiq.key
+    import odooiq_routes
+}
+
+www.quattroporte.local:80, quattroporte.local:80 {
+    import quattroporte_routes
+}
+www.quattroporte.local:443, quattroporte.local:443 {
+    tls /data/caddy/certs/quattroporte.crt /data/caddy/certs/quattroporte.key
+    import quattroporte_routes
+}
+
+www.odooai.local:80, odooai.local:80 {
+    import odooai_routes
+}
+www.odooai.local:443, odooai.local:443 {
+    tls /data/caddy/certs/odooai.crt /data/caddy/certs/odooai.key
+    import odooai_routes
+}
+
+:9444 {
+    tls /data/caddy/certs/southbrook.crt /data/caddy/certs/southbrook.key
+    import southbrook_routes
+}
+
+:9445 {
+    tls /data/caddy/certs/sapienzium.crt /data/caddy/certs/sapienzium.key
+    import sapienzium_routes
+}
+
+:9446 {
+    tls /data/caddy/certs/porterly.crt /data/caddy/certs/porterly.key
+    import porterly_routes
+}
+
+:9447 {
+    tls /data/caddy/certs/tribancs.crt /data/caddy/certs/tribancs.key
+    import tribancs_routes
+}
+
+:9448 {
+    tls /data/caddy/certs/odooiq.crt /data/caddy/certs/odooiq.key
+    import odooiq_routes
+}
+
+:9449 {
+    tls /data/caddy/certs/quattroporte.crt /data/caddy/certs/quattroporte.key
+    import quattroporte_routes
+}
+
+:9450 {
+    tls /data/caddy/certs/odooai.crt /data/caddy/certs/odooai.key
+    import odooai_routes
+}
+
+:80 {
+    import alfacore_routes
+}
+:443 {
+    tls /data/caddy/certs/alfacore.crt /data/caddy/certs/alfacore.key
+    import alfacore_routes
+}

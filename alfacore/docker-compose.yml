@@ -1,0 +1,122 @@
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: alfacore-postgres
+    restart: unless-stopped
+    networks: [alfacore-net]
+    environment:
+      POSTGRES_USER: odoo
+      POSTGRES_PASSWORD: UTToMhuxTgoZ3GEcr3ZymI5Me3T5vUwb
+      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - /share/CACHEDEV3_DATA/Container/odoo/postgres-data:/var/lib/postgresql/data
+    command: >
+      postgres
+      -c shared_buffers=2GB
+      -c effective_cache_size=8GB
+      -c work_mem=16MB
+      -c maintenance_work_mem=128MB
+      -c max_connections=100
+      -c wal_buffers=16MB
+      -c checkpoint_completion_target=0.9
+      -c random_page_cost=4.0
+      -c effective_io_concurrency=2
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo -d alfacore"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 2.5G
+
+  odoo:
+    image: odoo-alfacore:19
+    container_name: alfacore-odoo
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [alfacore-net]
+    expose: ["8069", "8072"]
+    environment:
+      HOST: postgres
+      USER: odoo
+      PASSWORD: UTToMhuxTgoZ3GEcr3ZymI5Me3T5vUwb
+    volumes:
+      - /share/CACHEDEV3_DATA/Container/odoo/odoo-data:/var/lib/odoo
+      - /share/CACHEDEV3_DATA/Container/odoo/config:/etc/odoo:ro
+      - /share/CACHEDEV3_DATA/Container/odoo/addons:/mnt/extra-addons
+      - /share/CACHEDEV3_DATA/Container/odoo/logs:/var/log/odoo
+    command: ["odoo", "--config=/etc/odoo/odoo.conf"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8069/web/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          memory: 5G
+
+  caddy:
+    image: caddy:2
+    container_name: alfacore-caddy
+    restart: unless-stopped
+    depends_on: [odoo]
+    networks:
+      - alfacore-net
+      - forgejo-net
+      - southbrook-net
+      - sapienzium-net
+      - porterly-net
+      - tribancs-net
+      - odooiq-net
+      - quattroporte-net
+      - odooai-net
+    ports:
+      - "9080:80"
+      - "9443:443"
+      - "9444:9444"
+      - "9445:9445"
+      - "9446:9446"
+      - "9447:9447"
+      - "9448:9448"
+      - "9449:9449"
+      - "9450:9450"
+    volumes:
+      - /share/CACHEDEV3_DATA/Container/odoo/config/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+networks:
+  forgejo-net:
+    external: true
+  alfacore-net:
+    external: true
+  southbrook-net:
+    external: true
+  sapienzium-net:
+    external: true
+  porterly-net:
+    external: true
+  tribancs-net:
+    external: true
+  odooiq-net:
+    external: true
+  quattroporte-net:
+    external: true
+  odooai-net:
+    external: true
+
+volumes:
+  caddy-data:
+  caddy-config:
